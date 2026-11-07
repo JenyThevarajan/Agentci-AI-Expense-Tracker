@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Expenses{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="page-title h3 mb-0">Expenses</h1>
+  <a class="btn btn-primary" href="/expenses/new">Add expense</a>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <form class="row g-2 align-items-end mb-3" method="get" action="/expenses">
+      <div class="col-sm-6 col-md-4">
+        <label class="form-label" for="category">Category</label>
+        <select class="form-select" id="category" name="category">
+          <option value="">All categories</option>
+          {% for category in categories %}
+          <option value="{{ category }}" {% if selected == category %}selected{% endif %}>{{ category }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-auto">
+        <button class="btn btn-outline-primary" type="submit">Filter</button>
+      </div>
+      {% if selected %}
+      <div class="col-auto">
+        <a class="btn btn-outline-secondary" href="/expenses">Clear</a>
+      </div>
+      {% endif %}
+    </form>
+
+    {% if error %}
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+    {% endif %}
+
+    {% if expenses %}
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead>
+          <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Category</th>
+            <th scope="col">Date</th>
+            <th scope="col" class="text-end">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for expense in expenses %}
+          <tr>
+            <td>{{ expense.title }}</td>
+            <td>{{ expense.category }}</td>
+            <td>{{ expense.date }}</td>
+            <td class="text-end amount">{{ expense.amount }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% elif not error %}
+    <p class="empty-state mb-0 text-center">
+      {% if selected %}No expenses in this category.{% else %}No expenses yet.{% endif %}
+    </p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

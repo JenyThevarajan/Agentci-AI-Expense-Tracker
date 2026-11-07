@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Add expense{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <h1 class="page-title h3 mb-4">Add expense</h1>
+    <div class="card shadow-sm">
+      <div class="card-body">
+        {% if errors.form %}
+        <div class="alert alert-danger" role="alert">{{ errors.form }}</div>
+        {% endif %}
+        <form method="post" action="/expenses" novalidate>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <div class="mb-3">
+            <label class="form-label" for="title">Title</label>
+            <input class="form-control {% if errors.title %}is-invalid{% endif %}" id="title" name="title" maxlength="100" value="{{ values.title }}" required>
+            {% if errors.title %}<div class="invalid-feedback">{{ errors.title }}</div>{% endif %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="amount">Amount</label>
+            <input class="form-control {% if errors.amount %}is-invalid{% endif %}" id="amount" name="amount" inputmode="decimal" value="{{ values.amount }}" required>
+            {% if errors.amount %}<div class="invalid-feedback">{{ errors.amount }}</div>{% endif %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="category">Category</label>
+            <select class="form-select {% if errors.category %}is-invalid{% endif %}" id="category" name="category" required>
+              <option value="">Select a category</option>
+              {% for category in categories %}
+              <option value="{{ category }}" {% if values.category == category %}selected{% endif %}>{{ category }}</option>
+              {% endfor %}
+            </select>
+            {% if errors.category %}<div class="invalid-feedback">{{ errors.category }}</div>{% endif %}
+          </div>
+          <div class="mb-4">
+            <label class="form-label" for="date">Date</label>
+            <input class="form-control {% if errors.date %}is-invalid{% endif %}" id="date" name="date" type="date" value="{{ values.date }}" required>
+            {% if errors.date %}<div class="invalid-feedback">{{ errors.date }}</div>{% endif %}
+          </div>
+          <button class="btn btn-primary" type="submit">Save expense</button>
+          <a class="btn btn-link" href="/expenses">Cancel</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

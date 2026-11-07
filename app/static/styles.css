@@ -1,0 +1,45 @@
+:root {
+  --portal-navy: #0f2744;
+  --portal-teal: #0f766e;
+}
+
+body {
+  background: #f4f7fb;
+  color: #1f2937;
+}
+
+.navbar {
+  background: var(--portal-navy);
+}
+
+.navbar-brand,
+.nav-link,
+.navbar-brand:hover,
+.nav-link:hover {
+  color: #fff;
+}
+
+.nav-link.active {
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.35rem;
+}
+
+.page-title {
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.stat-card {
+  border: 0;
+  border-top: 4px solid var(--portal-teal);
+}
+
+.amount {
+  font-variant-numeric: tabular-nums;
+}
+
+.empty-state {
+  padding: 2.5rem 1rem;
+  color: #6b7280;
+}
