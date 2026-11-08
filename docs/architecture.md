@@ -407,3 +407,11 @@ Clear the two filters independently:
 - Clear the category by choosing “All categories” and submitting the form, which still sends the current start and end.
 
 One clear control must not drop the category and the dates together. Stored titles stay encoded by the template.
+
+## 12. Optional Streamlit deployment interface
+
+**Decision:** Provide `streamlit_app.py` as an additional presentation entry point for Streamlit Community Cloud. Keep the FastAPI + Bootstrap application and Dockerfile as the original deployment path.
+
+**Layering:** The Streamlit page creates an `ExpenseService` with a SQLAlchemy repository and calls the same `create`, `list_expenses`, and `dashboard` methods as the FastAPI routes. It contains presentation and form handling only; it does not implement SQL, expense validation, or total calculations.
+
+**Persistence and exposure:** The Streamlit entry point uses the configured `DATABASE_PATH`, defaulting to the local SQLite file. Streamlit Community Cloud does not guarantee persistence for local files, so deployed SQLite data is suitable only for a disposable demonstration. Use a persistent external database for durable records. The release has no authentication, so the Streamlit URL must be treated as public and must not be used for confidential expense data.

@@ -37,13 +37,15 @@ Database:
 - SQLite
 
 Frontend:
-- Bootstrap
+- Bootstrap (FastAPI interface)
+- Streamlit (optional Community Cloud interface)
 
 Testing:
 - Pytest
 
 Deployment:
 - Docker
+- Streamlit Community Cloud (optional demonstration deployment)
 
 ## Security
 

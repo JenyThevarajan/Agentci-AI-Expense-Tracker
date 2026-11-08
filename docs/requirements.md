@@ -47,6 +47,7 @@ These items are not specified in the product requirements and are fixed here so 
 6. Input validation, safe error handling, and secure coding aligned with OWASP practices.
 7. Unit tests for every feature (Pytest).
 8. Project documentation and a Docker deployment description.
+9. An optional Streamlit interface for Streamlit Community Cloud demonstrations, reusing the existing expense service and validation rules.
 
 ## 5. Out of scope
 
@@ -166,6 +167,7 @@ These items are not specified in the product requirements and are fixed here so 
 | NFR-7 | Describe and later ship Docker artifacts so the app can run as a container. | PRD; rules.md |
 | NFR-8 | Keep project documentation current for requirements, architecture, and decisions. | rules.md |
 | NFR-9 | Do not commit secrets or change environment files without approval. Do not push directly to main. | rules.md |
+| NFR-10 | The optional Streamlit entry point uses the existing service and repository and does not introduce a second set of expense validation or totals rules. | Deployment scope update |
 
 ## 10. Traceability
 
