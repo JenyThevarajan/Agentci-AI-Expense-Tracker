@@ -9,7 +9,7 @@ from app.dependencies import get_service
 from app.models import CATEGORIES
 from app.service import ExpenseService
 from app.templating import templates
-from app.validation import ValidationFailed
+from app.validation import ValidationFailed, validate_list_filters
 
 router = APIRouter()
 _CSRF_COOKIE = "csrf_token"
@@ -104,10 +104,12 @@ def create_expense(
 def list_expenses(
     request: Request,
     category: str | None = None,
+    start: str | None = None,
+    end: str | None = None,
     service: ExpenseService = Depends(get_service),
 ) -> Response:
     try:
-        expenses = service.list_expenses(category)
+        expenses = service.list_expenses(category, start, end)
     except ValidationFailed as exc:
         return templates.TemplateResponse(
             request,
@@ -115,21 +117,26 @@ def list_expenses(
             {
                 "active": "expenses",
                 "categories": CATEGORIES,
-                "selected": None,
+                "selected": category if category in CATEGORIES else None,
+                "start": start or "",
+                "end": end or "",
                 "expenses": [],
-                "error": exc.errors[0].message,
+                "errors": [error.message for error in exc.errors],
             },
             status_code=422,
         )
+    filters = validate_list_filters(category, start, end)
     return templates.TemplateResponse(
         request,
         "expenses.html",
         {
             "active": "expenses",
             "categories": CATEGORIES,
-            "selected": category or None,
+            "selected": filters.category,
+            "start": filters.start or "",
+            "end": filters.end or "",
             "expenses": expenses,
-            "error": None,
+            "errors": [],
         },
     )
 

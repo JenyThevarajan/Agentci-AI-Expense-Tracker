@@ -9,7 +9,7 @@
 <div class="card shadow-sm">
   <div class="card-body">
     <form class="row g-2 align-items-end mb-3" method="get" action="/expenses">
-      <div class="col-sm-6 col-md-4">
+      <div class="col-sm-6 col-md-3">
         <label class="form-label" for="category">Category</label>
         <select class="form-select" id="category" name="category">
           <option value="">All categories</option>
@@ -18,18 +18,30 @@
           {% endfor %}
         </select>
       </div>
+      <div class="col-sm-6 col-md-3">
+        <label class="form-label" for="start">Start date</label>
+        <input class="form-control" type="date" id="start" name="start" value="{{ start }}">
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <label class="form-label" for="end">End date</label>
+        <input class="form-control" type="date" id="end" name="end" value="{{ end }}">
+      </div>
       <div class="col-auto">
         <button class="btn btn-outline-primary" type="submit">Filter</button>
       </div>
-      {% if selected %}
+      {% if start or end %}
       <div class="col-auto">
-        <a class="btn btn-outline-secondary" href="/expenses">Clear</a>
+        <a class="btn btn-outline-secondary" href="{% if selected %}/expenses?category={{ selected }}{% else %}/expenses{% endif %}">Clear dates</a>
       </div>
       {% endif %}
     </form>
 
-    {% if error %}
-    <div class="alert alert-danger" role="alert">{{ error }}</div>
+    {% if errors %}
+    <div class="alert alert-danger" role="alert">
+      {% for message in errors %}
+      <div>{{ message }}</div>
+      {% endfor %}
+    </div>
     {% endif %}
 
     {% if expenses %}
@@ -55,9 +67,9 @@
         </tbody>
       </table>
     </div>
-    {% elif not error %}
+    {% elif not errors %}
     <p class="empty-state mb-0 text-center">
-      {% if selected %}No expenses in this category.{% else %}No expenses yet.{% endif %}
+      {% if selected or start or end %}No expenses match these filters.{% else %}No expenses yet.{% endif %}
     </p>
     {% endif %}
   </div>
