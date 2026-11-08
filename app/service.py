@@ -8,7 +8,7 @@ from app.repository import ExpenseRecord, ExpenseStore
 from app.validation import (
     ExpenseInput,
     format_cents,
-    validate_category_filter,
+    validate_list_filters,
     validate_new_expense,
 )
 
@@ -69,9 +69,17 @@ class ExpenseService:
         )
         return _to_view(record)
 
-    def list_expenses(self, category: str | None) -> list[ExpenseView]:
-        selected = validate_category_filter(category)
-        return [_to_view(record) for record in self._store.list_expenses(selected)]
+    def list_expenses(
+        self,
+        category: str | None = None,
+        start: str | None = None,
+        end: str | None = None,
+    ) -> list[ExpenseView]:
+        filters = validate_list_filters(category, start, end)
+        return [
+            _to_view(record)
+            for record in self._store.list_expenses(filters.category, filters.start, filters.end)
+        ]
 
     def dashboard(self) -> DashboardView:
         # Totals always cover every stored expense. The list filter is not applied here.

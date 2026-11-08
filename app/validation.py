@@ -36,6 +36,19 @@ class ExpenseInput:
     expense_date: str
 
 
+@dataclass(frozen=True)
+class ListFilters:
+    category: str | None
+    start: str | None
+    end: str | None
+
+
+_CATEGORY_FILTER_MESSAGE = "Category must be one of: Travel, Meals, Supplies, Utilities, Other."
+_START_DATE_MESSAGE = "Start date must be a valid date (YYYY-MM-DD)."
+_END_DATE_MESSAGE = "End date must be a valid date (YYYY-MM-DD)."
+_DATE_ORDER_MESSAGE = "Start date must be on or before the end date."
+
+
 def format_cents(cents: int) -> str:
     """Render integer cents as a two-decimal string."""
     sign = "-" if cents < 0 else ""
@@ -69,18 +82,54 @@ def validate_new_expense(payload: object, today: date) -> ExpenseInput:
 
 def validate_category_filter(category: str | None) -> str | None:
     """Accept a missing filter. Reject a category outside the allowed list."""
-    if category is None or category == "":
+    errors: list[FieldError] = []
+    selected = _optional_category(category, errors)
+    if errors:
+        raise ValidationFailed(errors)
+    return selected
+
+
+def validate_list_filters(category: object, start: object, end: object) -> ListFilters:
+    """Accept a missing category or date bound. Reject invalid list filters together."""
+    errors: list[FieldError] = []
+    selected = _optional_category(category, errors)
+    parsed_start = _optional_filter_date(start, "start", _START_DATE_MESSAGE, errors)
+    parsed_end = _optional_filter_date(end, "end", _END_DATE_MESSAGE, errors)
+    if parsed_start is not None and parsed_end is not None and parsed_start > parsed_end:
+        errors.append(FieldError("start", _DATE_ORDER_MESSAGE))
+    if errors:
+        raise ValidationFailed(errors)
+    return ListFilters(selected, parsed_start, parsed_end)
+
+
+def _optional_category(value: object, errors: list[FieldError]) -> str | None:
+    if value is None or value == "":
         return None
-    if category not in CATEGORIES:
-        raise ValidationFailed(
-            [
-                FieldError(
-                    "category",
-                    "Category must be one of: Travel, Meals, Supplies, Utilities, Other.",
-                )
-            ]
-        )
-    return category
+    if not isinstance(value, str) or value not in CATEGORIES:
+        errors.append(FieldError("category", _CATEGORY_FILTER_MESSAGE))
+        return None
+    return value
+
+
+def _optional_filter_date(value: object, field: str, message: str, errors: list[FieldError]) -> str | None:
+    """Parse an optional list bound. Blank means the bound is not applied."""
+    if value is None:
+        return None
+    if not isinstance(value, str):
+        errors.append(FieldError(field, message))
+        return None
+    text = value.strip()
+    if not text:
+        return None
+    if not _DATE_PATTERN.fullmatch(text):
+        errors.append(FieldError(field, message))
+        return None
+    try:
+        datetime.strptime(text, "%Y-%m-%d").date()
+    except ValueError:
+        errors.append(FieldError(field, message))
+        return None
+    return text
 
 
 def _validate_title(value: object, present: bool, errors: list[FieldError]) -> str | None:

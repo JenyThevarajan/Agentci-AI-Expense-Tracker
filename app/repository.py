@@ -28,7 +28,12 @@ class ExpenseStore(Protocol):
         created_at: str,
     ) -> ExpenseRecord: ...
 
-    def list_expenses(self, category: str | None) -> list[ExpenseRecord]: ...
+    def list_expenses(
+        self,
+        category: str | None,
+        start: str | None = None,
+        end: str | None = None,
+    ) -> list[ExpenseRecord]: ...
 
     def summarize(self) -> tuple[int, list[tuple[str, int]]]: ...
 
@@ -57,13 +62,22 @@ class SqlAlchemyExpenseRepository:
         self._session.refresh(row)
         return _to_record(row)
 
-    def list_expenses(self, category: str | None) -> list[ExpenseRecord]:
+    def list_expenses(
+        self,
+        category: str | None,
+        start: str | None = None,
+        end: str | None = None,
+    ) -> list[ExpenseRecord]:
         statement = select(ExpenseRow).order_by(
             ExpenseRow.expense_date.desc(),
             ExpenseRow.id.desc(),
         )
         if category is not None:
             statement = statement.where(ExpenseRow.category == category)
+        if start is not None:
+            statement = statement.where(ExpenseRow.expense_date >= start)
+        if end is not None:
+            statement = statement.where(ExpenseRow.expense_date <= end)
         rows = self._session.scalars(statement).all()
         return [_to_record(row) for row in rows]
 
