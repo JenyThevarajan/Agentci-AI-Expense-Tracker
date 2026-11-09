@@ -395,7 +395,7 @@ On an error, put the submitted `start` and `end` text back in the form. Keep `se
 
 ### Template
 
-The list form stays `GET /expenses` and gains Start date and End date controls named `start` and `end`, beside the category select. Empty controls omit that bound.
+The list form stays `GET /expenses` and gains Start date and End date controls named `start` and `end`, beside the category select. Use native `type="date"` inputs and visible calendar buttons that invoke the browser date picker (`showPicker`, with focus/click fallback). The inputs remain keyboard-editable for manual entry. Empty controls omit that bound.
 
 Show each filter error. When `errors` is present, do not render the table or the “no expenses” copy.
 
@@ -415,3 +415,5 @@ One clear control must not drop the category and the dates together. Stored titl
 **Layering:** The Streamlit page creates an `ExpenseService` with a SQLAlchemy repository and calls the same `create`, `list_expenses`, and `dashboard` methods as the FastAPI routes. It contains presentation and form handling only; it does not implement SQL, expense validation, or total calculations.
 
 **Persistence and exposure:** The Streamlit entry point uses the configured `DATABASE_PATH`, defaulting to the local SQLite file. Streamlit Community Cloud does not guarantee persistence for local files, so deployed SQLite data is suitable only for a disposable demonstration. Use a persistent external database for durable records. The release has no authentication, so the Streamlit URL must be treated as public and must not be used for confidential expense data.
+
+**Date filters:** Render the optional start and end bounds with Streamlit `date_input` widgets using the `YYYY-MM-DD` display format. These provide a calendar picker and support typed dates. Convert selected dates to ISO strings before calling `ExpenseService.list_expenses`; keep an unselected bound as `None`, and retain the independent clear-date and clear-category behavior.

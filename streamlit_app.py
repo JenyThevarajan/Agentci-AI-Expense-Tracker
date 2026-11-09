@@ -31,8 +31,8 @@ def _service() -> Iterator[ExpenseService]:
 
 
 def _clear_dates() -> None:
-    st.session_state.start_filter = ""
-    st.session_state.end_filter = ""
+    st.session_state.start_filter = None
+    st.session_state.end_filter = None
     st.session_state.filters_submitted = True
 
 
@@ -81,8 +81,8 @@ elif page == "Expenses":
     st.header("Expenses")
 
     st.session_state.setdefault("category_filter", "All categories")
-    st.session_state.setdefault("start_filter", "")
-    st.session_state.setdefault("end_filter", "")
+    st.session_state.setdefault("start_filter", None)
+    st.session_state.setdefault("end_filter", None)
     st.session_state.setdefault("filters_submitted", False)
 
     clear_dates, clear_category = st.columns(2)
@@ -91,8 +91,8 @@ elif page == "Expenses":
 
     with st.form("expense_filters"):
         st.selectbox("Category", ["All categories", *CATEGORIES], key="category_filter")
-        st.text_input("Start date (YYYY-MM-DD)", key="start_filter")
-        st.text_input("End date (YYYY-MM-DD)", key="end_filter")
+        st.date_input("Start date", value=None, key="start_filter", format="YYYY-MM-DD")
+        st.date_input("End date", value=None, key="end_filter", format="YYYY-MM-DD")
         submitted = st.form_submit_button("Apply filters")
 
     if submitted:
@@ -100,8 +100,10 @@ elif page == "Expenses":
 
     category_filter = st.session_state.category_filter
     active_category = None if category_filter == "All categories" else category_filter
-    start_filter = st.session_state.start_filter
-    end_filter = st.session_state.end_filter
+    start_value = st.session_state.start_filter
+    end_value = st.session_state.end_filter
+    start_filter = start_value.isoformat() if isinstance(start_value, date) else None
+    end_filter = end_value.isoformat() if isinstance(end_value, date) else None
     try:
         with _service() as service:
             expenses = service.list_expenses(
