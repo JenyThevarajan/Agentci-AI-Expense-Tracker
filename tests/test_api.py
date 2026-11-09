@@ -196,6 +196,27 @@ def test_api_rejects_invalid_date_ranges_without_a_list(client: TestClient):
     assert [item["title"] for item in listed.json()["expenses"]] == ["Kept"]
 
 
+def test_expense_filter_page_has_calendar_picker_controls(client: TestClient):
+    page = client.get("/expenses")
+    assert page.status_code == 200
+    assert 'type="date" id="start" name="start"' in page.text
+    assert 'type="date" id="end" name="end"' in page.text
+    assert 'data-date-picker="start"' in page.text
+    assert 'data-date-picker="end"' in page.text
+    assert page.text.count("Choose date") == 2
+    assert "input.showPicker()" in page.text
+
+
+def test_streamlit_date_filters_use_optional_calendar_widgets():
+    from pathlib import Path
+
+    streamlit_source = (Path(__file__).parents[1] / "streamlit_app.py").read_text(encoding="utf-8")
+    assert 'st.date_input("Start date", value=None, key="start_filter", format="YYYY-MM-DD")' in streamlit_source
+    assert 'st.date_input("End date", value=None, key="end_filter", format="YYYY-MM-DD")' in streamlit_source
+    assert "start_value.isoformat() if isinstance(start_value, date) else None" in streamlit_source
+    assert "end_value.isoformat() if isinstance(end_value, date) else None" in streamlit_source
+
+
 def test_api_rejects_a_non_json_body(client: TestClient):
     response = client.post("/api/expenses", content="not-json", headers={"content-type": "application/json"})
     assert response.status_code == 422

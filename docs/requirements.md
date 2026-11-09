@@ -79,6 +79,7 @@ These items are not specified in the product requirements and are fixed here so 
 | FR-17 | The date range and the category filter apply together. |
 | FR-18 | A valid date range that matches no expenses shows the empty state. |
 | FR-19 | The dashboard totals stay based on every stored expense when a date range is active on the list. |
+| FR-20 | The start-date and end-date filters provide calendar-picker controls as well as accepting manually typed dates in the Bootstrap and Streamlit interfaces. |
 
 ## 7. Field rules
 
@@ -153,6 +154,7 @@ These items are not specified in the product requirements and are fixed here so 
 7. Given a valid date range that matches no expenses, when the employee applies the filter, then the empty state is shown and no error is raised.
 8. Given a date range on the expense list, when the employee opens the dashboard, then the dashboard still shows totals for all expenses.
 9. Given an active date range, when the employee clears the start and end dates, then the date constraint is removed. A category that is still selected stays applied.
+10. Given the expense filter form in either interface, when the employee focuses either date field, then a calendar is available for selecting that date; the employee can also type a date manually.
 
 ## 9. Non-functional requirements
 

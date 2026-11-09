@@ -20,11 +20,17 @@
       </div>
       <div class="col-sm-6 col-md-3">
         <label class="form-label" for="start">Start date</label>
-        <input class="form-control" type="date" id="start" name="start" value="{{ start }}">
+        <div class="input-group">
+          <input class="form-control" type="date" id="start" name="start" value="{{ start }}">
+          <button class="btn btn-outline-secondary date-picker-button" type="button" data-date-picker="start" aria-label="Choose start date" title="Choose start date">&#128197; Choose date</button>
+        </div>
       </div>
       <div class="col-sm-6 col-md-3">
         <label class="form-label" for="end">End date</label>
-        <input class="form-control" type="date" id="end" name="end" value="{{ end }}">
+        <div class="input-group">
+          <input class="form-control" type="date" id="end" name="end" value="{{ end }}">
+          <button class="btn btn-outline-secondary date-picker-button" type="button" data-date-picker="end" aria-label="Choose end date" title="Choose end date">&#128197; Choose date</button>
+        </div>
       </div>
       <div class="col-auto">
         <button class="btn btn-outline-primary" type="submit">Filter</button>
@@ -74,4 +80,17 @@
     {% endif %}
   </div>
 </div>
+<script>
+  document.querySelectorAll("[data-date-picker]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const input = document.getElementById(button.dataset.datePicker);
+      if (typeof input.showPicker === "function") {
+        input.showPicker();
+      } else {
+        input.focus();
+        input.click();
+      }
+    });
+  });
+</script>
 {% endblock %}
